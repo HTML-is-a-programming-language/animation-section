@@ -239,7 +239,24 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-lazyload/17.8.5/lazyload.min.js"></script>
 
   <script>
+    (() => {
+        const hasScheduler =
+            typeof window.scheduler === "object" &&
+            window.scheduler !== null &&
+            typeof window.scheduler.postTask === "function";
 
+        if (!hasScheduler) {
+            window.scheduler = {
+                postTask: (cb) =>
+                    Promise.resolve().then(() => {
+                        if (typeof cb === "function") {
+                            return cb();
+                        }
+                        return undefined;
+                    }),
+            };
+        }
+    })();
   </script>
 
   <script>
